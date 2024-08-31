@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sorteo</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+</head>
+<body>
+    <div class="contenedor">
+        <div class="concursantes">
+            <canvas id="idcanvas" width="600" height="600"></canvas>
+            <div class="arrow"></div>
+            <div class="spin-circle" onclick="sortear()">SPIN</div>
+            <div class="mark-winner"></div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        const array_concursantes = [
+            'PENSAMIENTO LÓGICO',
+            'Memoria',
+            'ATENCIÓN Y CONCENTRACIÓN',
+            'COMPRENSIÓN',
+            'ESCRITURA',
+            'PENSAMIENTO LÓGICO',
+            'COMPRENSIÓN ANALÍTICA',
+            'CREATIVIDAD E IMAGINACIÓN',
+            'PENSAMIENTO CRÍTICO',
+            'SOCIAL'
+        ];
+
+        const array_colores = [
+            '#ac3338',
+            '#96994c',
+            '#355292',
+            '#986aa8',
+            '#13308c',
+            '#6a9ec5',
+            '#3aa7bb',
+            '#359855',
+            '#b35843',
+            '#92429b'
+        ];
+
+        let canvas = document.getElementById("idcanvas");
+        let context = canvas.getContext("2d");
+        let center = canvas.width / 2;
+        let num_segments = array_concursantes.length;
+        let segment_angle = 360 / num_segments;
+
+        // Draw the wheel
+        context.beginPath();
+        context.moveTo(center, center);
+        context.arc(center, center, center, 0, 2 * Math.PI);
+        context.lineTo(center, center);
+        context.fillStyle = '#33333333';
+        context.fill();
+
+        context.beginPath();
+        context.moveTo(center, center);
+        context.arc(center, center, center - 10, 0, 2 * Math.PI);
+        context.lineTo(center, center);
+        context.fillStyle = 'black';
+        context.fill();
+
+        for (var i = 0; i < num_segments; i++) {
+    context.beginPath();
+    context.moveTo(center, center);
+    context.arc(center, center, center - 20, i * 2 * Math.PI / num_segments, (i + 1) * 2 * Math.PI / num_segments);
+    context.lineTo(center, center);
+    context.fillStyle = array_colores[i];
+    context.fill();
+
+    context.save();
+    context.translate(center, center);
+    context.rotate(i * 2 * Math.PI / num_segments);
+    context.translate(-center, -center);
+    context.font = "13px Comic Sans MS";
+    context.textAlign = "center"; // Cambiar textAlign a "center"
+    context.fillStyle = "white";
+    context.fillText(array_concursantes[i], center, center - (center - 30) / 2); // Ajustar la posición vertical
+    context.restore();
+}
+
+        let pos_ini = 0;
+        let clic = 0;
+        let movement;
+        let final_angle = 0;
+
+        function sortear() {
+    if (clic == 0) {
+        movement = setInterval(function () {
+            pos_ini += 10;
+            final_angle = pos_ini % 360;
+            canvas.style.transform = 'rotate(' + pos_ini + 'deg)';
+        }, 10);
+        clic = 1;
+        document.querySelector(".spin-circle").innerHTML = "STOP";
+    } else {
+        clearInterval(movement);
+        clic = 0;
+        document.querySelector(".spin-circle").innerHTML = "SPIN";
+
+        // Calcular el ángulo final y el segmento correspondiente
+        let adjusted_angle = (final_angle + 90) % 360; // Ajustar para la flecha
+        let ganador = Math.floor((adjusted_angle / 360) * num_segments);
+        ganador = (num_segments - ganador) % num_segments; // Ajuste para el índice correcto
+        alert("El ganador es: " + array_concursantes[ganador]);
+    }
+        }
+    </script>
+</body>
+</html>
